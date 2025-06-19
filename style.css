@@ -1,0 +1,74 @@
+/* Pull fonts*/
+@font-face {
+    font-family: "Bookinsanity";
+    src: local("/fonts/Bookinsanity.otf") format("opentype");
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "Zatanna Misdirection";
+    src: local("fonts/Zatanna_Misdirection.otf") format("opentype");
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "Nodesto Caps Condensed";
+    src: local("fonts/Nodesto_Caps_Condensed.otf") format("opentype");
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "Scaly Sans";
+    src: local("fonts/Scaly_Sans.otf") format("opentype");
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: "Mr Eaves Small Caps";
+    src: local("/fonts/Mr_Eaves_Small_Caps.otf") format("opentype");
+    font-weight: normal;
+}
+/* Fonts pulled */
+
+h1 {
+    font-family: "Mr Eaves Small Caps";
+    color: #CC2936;
+    font-size: 5em;
+    text-align: center;
+}
+
+h2 {
+    font: "Mr Eaves Small Caps";
+    color: rgb(95,25,25);
+    font-size: 2em;
+    text-align: center;
+}
+
+h3 {
+    font: "Mr Eaves Small Caps";
+    color: #CC2936;
+    font-size: 3em;
+    text-align: center;
+}
+
+p {
+    font: "Booksanity";
+    text-align: left;
+    color: rgb(20,20,20);
+    font-size: 1.4em;
+    width: 60%;
+    padding-left:20%;
+    padding-right:20%;
+}
+
+blurb {
+    font: "Zatanna Misdirection";
+    text-align: center;
+    font-size: 2em;
+    width: 100%;
+}
+
+/*6B818C*/
+html {
+    background-color: #f4dcad;
+}

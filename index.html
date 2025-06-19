@@ -2,10 +2,49 @@
 <html>
     <head>
         <title>What Makes a Monster?</title>
+        <link href="style.css" type="text/css" rel="stylesheet"/>
     </head>
     <body>
-        <p>
-            We're in boys
+        <header>
+            <h1>
+                What Makes a Monster?
+            </h1>
+            <h2>
+                An exploration of monster power level quantification in Dungeons and Dragons
+            </h2>
+            <spacer type="vertical" height="50"/>
+        </header>
+        
+        <h3>
+            Premise
+        </h3>
+        <p> 
+            In Dungeons & Dragons (or D&D), a group of players make characters and go on adventures in a fantasy world control by a special player called the Dungeon Master, or DM. The DM has countless responsabillities in the game, including playing as the enemies, building the world, writing the story, immproving to keep the story on track, and designing combat encounters to name just a few.
+            <br/>
+            <br/>
+            I've been DMing for years, and there's a consistent problem I've faced while setting up stories. The creators of D&D provide several hundred generic monsters to add in to your games. These monsters have a Challenge Rating (or CR) to describe how powerful they are and help DMs design fair encounters for their group's power level. 
+            <br/>
+            <br/>
+            But it won't be long before your game calls for a custom designed monster. The trouble is, it's very difficult to evaluate how powerful the monsters are. I can't tell you how many times I've made a monster thinking it was fair, only for my players to immediately crush it, or for the monster to be practically unkillable. So, it would be very useful to be able to determine what the CR of a monster should be given its abillities. 
+            <br/>
+            <br/>
+            This page will take you through my process of building a linear regression model to determine exactly that.
         </p>
+        <center>
+            <blurb>
+                <b>Question:</b> How do we relate a monster's stats to its Challenge Rating?
+            </blurb>
+        </center>
+        <h3>
+            Part 1: The Data
+        </h3>
+        <p> 
+            A dataset containing information on every generic monster in D&D* is hosted on <a href='https://www.kaggle.com/datasets/mrpantherson/dnd-5e-monsters'>Kaggle.com</a>
+            <br>
+            <center>
+                <i style="font-size:14px">*Dungeons and Dragons 5th edition, 2014 ruleset</i>
+            </center>
+        </p>
+        <embed type="text/html" src="plotly/hp_vs_cr.html" width="1000" height="600">
     </body>
 </html>
