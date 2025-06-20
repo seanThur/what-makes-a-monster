@@ -268,36 +268,190 @@
                 The more data we have, the more accurate our conclusions will be, and this applies to each column. The more monster have that are legendary, for instance, the better our predictions about the effects of legendary status on CR will be. To gain a basic understanding of what kinds of data we have and how reliable our conclusions will be, we should look at what we have. 
             </p>
             <center>
-                <div id='container-1' onload="this.innerHTML = dataVis({
-                        'univariate_ac_hist': 'this is the AC histogram',
-                        'univariate_cr_hist': 'this is the CR histogram',
-                        'univariate_type_pie': 'this is the type pie chart',
-                    });">
+                <div id="chart-vis-1">
+                </div>
                 <script>
-                    document.getElementById('container-1').innerHTML = dataVis({
-                        "univariate_ac_hist": "this is the AC histogram",
-                        "univariate_cr_hist": "this is the CR histogram",
-                        "univariate_type_pie": "this is the type pie chart",
+                    vis = new DataVis({
+                        'univariate_cr_hist': 'In this histogram, we can clearly see that the vast majority of monsters in the dataset have a CR below 6, and that the distribution is a clear exponential decay. This means that our model has more data for, and will thus be better at predicting, lower CR values.',
+                        'univariate_ac_hist': 'AC values are nearly normally distributed and fairly well grouped between 10 and 19, which is actually one of the defining principles of D&D 5th edition <a href = "https://dungeonsdragons.fandom.com/wiki/Bounded_accuracy">Bounded Accuracy</a>. AC values will also very likely be within this range for any monster stats we input, since 5th edition requires AC to be restricted. This limitation of range will be advantagous for the accuracy our predictions, but will also be problematic for some outliers. Our model will struggle to understand the impact of extreme AC values (in either direction).',
+                        'univariate_ed_hist': 'Expected Damage values between 4 and 23 have significant quantities of data (with annother exponential decay) with a sharp drop-off in either direction. It\'s worth awknowleging here that Expected Damage is extremely difficult to calculate and the approximation here is very rough. We can expect our model to stuggle with evaluating the power level of Expected Damage values of 24 and above due to a lack of data.',
+                        'univariate_ehb_hist': 'This (nearly) normal distribution is annother result of Bounded Accuracy philosphy that makes our AC values bounded arround a few finite values, but here the pattern is even more strong. To hit values above 10 are very rare in practice, meaning our model has ample data for the overwhelming majority of AC values we\'ll be throwing at it.',
+                        'univariate_ssd_hist': 'This histogram clearly displays that the vast majority (85%) of our monsters have no access to spells. To more clearly analyise this data, we can look at the next chart.',
+                        'univariate_ssd_sz_hist': 'Spell Save DCs, which we\'re using to approximate the strength a monster\'s magic, are annother attribute normal(ish)ly distributed by Bounded Accuracy. However, the overall lack of data on spellcasters will affect our model\'s abillity to predict the power of mages. Values between 10 and 15 have at least 10 entries, and most spellcasters will be within this range. However, magic specialist monsters, like liches and other major villains, <i>are</i> likely to have a Spell Save above 15, so out model may stuggle with evil magi. monsters that supliment their abillities with lesser magic will be much easier to predict the Power Level for.' ,
+                        'univariate_hp_hist': 'Hit Points have a strong exponential decay and wide range of values. the 160-179 category is the last one with more than 10 entries, so we can expect monsters with 180 or greater Hit Points to be harder for our model to evaluate.',
+                        'univariate_mar_hist': 'While this value may have an impact on our model\'s accuracy, it\'s on of the data points that I think may have little or no impact on the model, and is largely being included to test that hypothesis. This distribution is the most unusual one yet, with a strong expontential decay up to 30-39ft (because the number 30ft is very significant in D&D, as it\'s the distance more players and monsters can move between attacks) with the rest of the data grouped into 3 apparent clusters around 60, 90, and 150. Monsters that don\'t have a maximum range within one of the these boundaries may confound our model.',
+                        'univariate_legendary_pie': 'Our dataset includes 35 Legendary monsters (and 365 non-legendary ones). It will be interested to see how accurately our model can predict the CR of Legendary monsters, and thus whether or not this is enough data for our model to factor Legendary status into power level.',
+                        'univariate_mr_pie': '48 of our monsters have Magic Resistence, meaning that our model will likely have a better understanding of it than Legendary Status. ',
+                        'univariate_size_pie': 'Unsurprisingly, the extreme ends of the Size spectrum (tiny and gargantuan) are the smallest ones. There are 16 gargantuan monsters, which I hope should be enough for the model to have a strong understanding. I also don\'t expect the size category to have a significant impact on power level, but I\'m interested to see what the numbers say.',
+                        'univariate_speed_pie': 'We can see that all three categories of SPeed have a large number of monsters. This even distribution exactly what we want to see from a linear regression data point, since we have lots of information about all groups.',
+                        'univariate_type_pie': 'This is perhaps the data column that I\'m the most suspicous of. Creature Type has minimal mechanical effect on the game, but the model may be able to use it as an estimate for what a monster can do. This distribution does not bode well for the useabillity of the data. 7 of the 15 categories have 10 or few datapoints, and we can expect our model to have a limited understanding of these rarer types.'
                     });
+                    document.getElementById("chart-vis-1").appendChild(vis.get_form_ob());
                 </script>
             </center>
             <p>
                 I have a few hypotheses about which stats track the closest with CR, and now we're able to test those ideas. Based on my experience as a DM, I'd guess that these stats (in descending order) are going to have the strongest corelation with CR:
+            </p>
+            <p>
                 <ol class="outer_list">
                     <li>HP</li>
                     <li>Expected Damage</li>
                     <li>Spell Save DC</li>
-                    <li>Hit Bonus</li>
+                    <li>Expected Hit Bonus</li>
                     <li>AC</li>
                 </ol>
-                In addition, I suspect that of the 6 basic stats (Strength, Dexterity, Constitution, Intelligence, Wisdom, and Charisma), Dexterity will have the best correlation with CR.
-                <br><br>
-                We can test this ideas by fitting these stats to CR and comparing their correlation coefficents. 
             </p>
-            
+            <p>
+            <!--     In addition, I suspect that of the 6 basic stats (Strength, Dexterity, Constitution, Intelligence, Wisdom, and Charisma), Dexterity will have the best correlation with CR.
+                <br><br> -->
+                We can test these ideas by fitting these data to CR and comparing their correlation coefficents. 
+            </p>
+            <center>
+                <div id="chart-vis-2">
+                </div>
+                <script>
+                    //document.getElementById("chart-vis-2").innerHTML = 
+                    vis = new DataVis({
+                        'bivariate_hp_reg': 'Here we can see that the simple linear regression tracks very closely with the HP of a monster. The shape may suggest that an exponential fit line would be better, but I tried exponential fits for all these regressions and none were better fits than their linear counterparts. Interestingly, most of the outliers on the upper left and spellcasting specialists, with that point on (135, 21) being the lich.',
+                        'bivariate_ed_reg': 'Here we see a very poor correlation. This may be because more powerful monsters tend to have more complex powers rather than simply having larger numbers, meaning that the more powerful monsters are harder to quantify in terms of offensive power.',
+                        'bivariate_ssd_reg': 'Due to the zero values in this data, this regression is meaningless for all practical purposes.',
+                        'bivariate_ssd_sz_reg': 'Here, we see that the Spell Save DC is an incredibly strong predictor of CR for spellcasters. This may be because of our small sample size, but it\'s clear that Spell Save DC is a great marker of power level for spellcasters.',
+                        'bivariate_ehb_reg': 'I was very surprised by the strength of this correlation, because in my own experience with that game I\'ve noticed that Hit Bonuses tend to stay within a small range due to Bounded Accuracy. However, it clearly seems that my experience is not representative of reality, as Expected Hit Bonus acts as a strong predictor of CR.',
+                        'bivariate_ac_reg': 'This correlation is quite poor, which is probably a good thing from a game design perspective. If a monster\'s AC value is too high, players are likely to miss when they attack, dealing no damage. This is generally considered \'no fun\', so most monsters are designed with an intentially limited AC for a better play experience.',
+                    });//, 2);
+                    document.getElementById("chart-vis-2").appendChild(vis.get_form_ob());
+                </script>
+            </center>
+            <center>
+                <table>
+                    <tr>
+                        <td>Data Column</td>
+                        <td>R Squarded</td>
+                    </tr>
+                    <tr>
+                        <td>HP</td>
+                        <td>0.88</td>
+                    </tr>
+                    <tr>
+                        <td>Expected Damage</td>
+                        <td>0.46</td>
+                    </tr>
+                    <tr>
+                        <td>Spell Save DC</td>
+                        <td>0.11 (0.91 for spellcasters)</td>
+                    </tr>
+                    <tr>
+                        <td>Expected Hit Bonus</td>
+                        <td>0.84</td>
+                    </tr>
+                    <tr>
+                        <td>AC</td>
+                        <td>0.56</td>
+                    </tr>
+                </table>
+            </center>
+            <p>
+                As we can see, most of my ordering was wrong, although I was right about the attribute with the strongest correlation. However, Expected Damage is not as strong an indicator of CR as I had hoped, and Spell Save DC is confounded by the overwhelming corpus of magicless monsters.
+                <br><br>
+                I had assumed that Bounded Accuracy would mean that AC wouldn't have enough variablillity to predict CR, but it turns out that AC tracks incredibly closely with CR. And while AC is a poor indicator of CR by itself as I expected, it's better than Expected Damage and Spell Save DC.
+                <br><br>
+                While we're exploring the data, I want to take a look at Type, the column I'm the most suspicious of.
+            </p>
+            <center>
+                <img src="images/Pivot2.PNG"/>
+            </center>
+            <p>
+                Above is a 'pivot table'. In this table, the entries are the mean Challenge Rating of all monsters that mean the criteria of the column and row. For instance, the mean CR of all undead, non-legendary monsters is 2.17. For reference, the mean CR of all monsters in the dataset is 4.66.
+                <br><br>
+                I'm encouraged by this table, as it shows most of the creature types having a significantly different average CR. This suggests that knowing which type a creatures is will be helpful to determine what its CR will be.
+            </p>
+    
+        </section>
+        <section>
+            <h3>
+                Part 3: Problem Identification
+            </h3>
+            <p>
+                We've now prepared and studied our data enough that we're ready to start building the actual predictive model. To explain the purpose of this model, here is an actual monster I designed for a D&D game.
+            </p>
+            <center>
+                <img src="images/Bullywug_Gladiator.PNG"/>
+            </center>
+            <p>
+                My goal is to create a statistical model that can generate a Challenge Rating for an original monster given its stats. 
+                <br><br>
+                Because our goal is to predict a numerical value, we need to construct a <strong>Regression Model</strong>. The core of this model will be a mathmatical formula that takes in the values we've prepared, multiplies them by some coefficents, and produces a number that should be close to the actual CR value for that monster. To find what coefficents to use, we'll pick an <strong>Evaluation Metric</strong> and try many values of these coefficents until we've minimized the evaluation metric. I've chosen to use <strong>Mean Squared Error with LASSO Regularization</strong> as the evaluation metric for this model. 
+                <br><br>
+                Mean Squared Error has several advantage over alternatives like Mean Absolute Error, namely the fact that it is differentiable and the fact that it produces a function that considers outliers. Using LASSO regularization will incentivize the system to produce small coefficents, which is desirable for reducing variabillity and preventing overfitting. LASSO can also help us determine if any of our datapoints aren't useful for predicting CR, as it will push their coefficeints to zero, potentially simplifying our model.
+            </p>
+            <center>
+                <table>
+                    <tr>
+                        <td>Prediction Type</td>
+                        <td>Regression</td>
+                    </tr>
+                    <tr>
+                        <td>Response Variable</td>
+                        <td>Challenge Rating</td>
+                    </tr>
+                    <tr>
+                        <td>Evaluation Metric</td>
+                        <td>MSE with LASSO</td>
+                    </tr>
+                </table>
+            </center>
+        </section>
+        <section>
+            <h3>
+                Part 4: Baseline Model
+            </h3>
+            <p>
+                To begin, I decided to add in all of the features discussed and see what LASSO would select. I was a bit surprised by just how much fat it cut. 
+                <br><br>
+                However, before feeding the data into the model, it needs some processing to make it more machine-comprehensible. 
+                <br><br>
+                Our categorical data, size and type, won't play well with our mathmatical model. Instead of using text, we can use "One Hot Encoding" (real name) to convert these columns to grids of binary information.
+            </p>
+            <center>
+                <img src="images/One_Hot_Encoding.PNG"/>
+            </center>
+            <p>
+                Similarly, we'll need to encode swimming and flying speed categories into two columns.
+            </p>
+            <center>
+                <img src="images/Speed_Encode.PNG"/>
+            </center>
+            <p>
+                Lastly, we need to handle our most complex data: The damage effects and condition immunities. There are 13 damage types and 12 conditions, so if we encoded this information the same way we did the speed information, we'll be adding 51 columns, none of which will have much useable data. Rather than this, my plan is to simply record the number of immunities, numbers of resistences, number of vulnerabillities, and number of condition immunities, which will be much more useful for the model. 
+                <br><br>
+                However, not all damage resistences are completely equal. Before take the count, I first check if the monster has the most important resistence or immunity: mundane damage. The is phrased as "bludgeoning, piercing and slashing damage from nonmagical attacks". This "Mundane Damage Resistence" is a powerful abillity that may be useful for determining CR. If I find the word "nonmagical" in a monster's damage resistences, I record it in its own column, and I do the same with immunities. After omiting any mundage damage resistences and immunities, I count the others, which are comparatively interchangable. 
+            </p>
+            <center>
+                <img src="images/Damage_Encoding.PNG"/>
+            </center>
+            <p>
+                Rather than doing all of those steps on their own, which would force anyone who wants to use our model to make the same changes, all of these steps are put into a ColumnTransformer object using sklearn, so the process can be repeated on incoming data. 
+            </p>
+            <center>
+                <img src="images/Column_Transformer.PNG"/>
+            </center>
+            <p>
+                Next, we put the data through a StandardScaler object. This puts all of the data on the same scale, which allows us to directly interpret the coefficients. 
+                <br><br>
+                For example, the HP column of our data ranges from 1 to 600 and our legendary column ranges from 0 to 1. If we saw that HP had a coefficent of 10 and legendary had a coefficent of 500, we couldn't confidently say which is more important. When we standardize data, we converts each entry in each column to a standard deviation score, which puts all the data on the same scale without losing information.
+            </p>
+            <center>
+                <img src="images/Std_Scale.PNG"/>
+            </center>
+            <p>
+                Finally, we feed this into a LASSO Regression object, then fit our model with our data. This will train a single model to predict CR given the data we've collected, but that's only one. 
+                <br><br>
+                Rather than creating one model, we'll use a GridSearchCV object to train 600 versions of our model and test which one has the best performance. We'll make each of the versions slightly different by modifying the settings of LASSO each time. We'll also set aside some of the data (20%) from each model's input and save it to test our models with, so that we can evaluate how accurate each one is. 
+            </p>
+            <center>
+                <img src="images/GridSearch.PNG"/>
+            </center>
         </section>
         
-        
-        <embed type="text/html" src="plotly/hp_vs_cr.html" width="1000" height="600">
     </body>
 </html>
