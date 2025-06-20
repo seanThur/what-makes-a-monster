@@ -1,31 +1,31 @@
 /* Pull fonts*/
 @font-face {
     font-family: "Bookinsanity";
-    src: local("/fonts/Bookinsanity.otf") format("opentype");
+    src: url("fonts/Bookinsanity.otf") format("opentype");
     font-weight: normal;
 }
 
 @font-face {
     font-family: "Zatanna Misdirection";
-    src: local("fonts/Zatanna_Misdirection.otf") format("opentype");
+    src: url("fonts/Zatanna_Misdirection.otf") format("opentype");
     font-weight: normal;
 }
 
 @font-face {
     font-family: "Nodesto Caps Condensed";
-    src: local("fonts/Nodesto_Caps_Condensed.otf") format("opentype");
+    src: url("fonts/Nodesto_Caps_Condensed.otf") format("opentype");
     font-weight: normal;
 }
 
 @font-face {
     font-family: "Scaly Sans";
-    src: local("fonts/Scaly_Sans.otf") format("opentype");
+    src: url("fonts/Scaly_Sans.otf") format("opentype");
     font-weight: normal;
 }
 
 @font-face {
     font-family: "Mr Eaves Small Caps";
-    src: local("/fonts/Mr_Eaves_Small_Caps.otf") format("opentype");
+    src: url("fonts/Mr_Eaves_Small_Caps.otf") format("opentype");
     font-weight: normal;
 }
 /* Fonts pulled */
@@ -38,21 +38,28 @@ h1 {
 }
 
 h2 {
-    font: "Mr Eaves Small Caps";
+    font-family: "Mr Eaves Small Caps";
     color: rgb(95,25,25);
     font-size: 2em;
     text-align: center;
 }
 
 h3 {
-    font: "Mr Eaves Small Caps";
+    font-family: "Mr Eaves Small Caps";
     color: #CC2936;
     font-size: 3em;
     text-align: center;
+    position: sticky;
+    top: 0;
+    background-color: #f4dcad;
+    border-bottom: 1px solid black;
+    width: 60%;
+    padding-left:20%;
+    padding-right:20%;
 }
 
 p {
-    font: "Booksanity";
+    font-family: "Booksanity";
     text-align: left;
     color: rgb(20,20,20);
     font-size: 1.4em;
@@ -61,12 +68,55 @@ p {
     padding-right:20%;
 }
 
+.outer_list {
+    font-family: "Scaly Sans";
+    text-align: left;
+    color: rgb(20,20,20);
+    font-size: 1.3em;
+    width: 50%;
+    padding-left:25%;
+    padding-right:25%;
+}
+
+/*
+li ul {
+    font-family: "Booksanity";
+    text-align: left;
+    color: rgb(20,20,20);
+    font-size: 1.3em;
+    width: 50%;
+    padding-left:25%;
+    padding-right:5%;
+}
+*/
+
+li {
+    
+}
+
 blurb {
-    font: "Zatanna Misdirection";
+    font-family: "Zatanna Misdirection";
     text-align: center;
     font-size: 2em;
     width: 100%;
 }
+
+table, tr, td {
+    font-family: "Scaly Sans" ;
+    font-size: 20px;
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+td {
+    padding: 5px;
+}
+
+#chart-nav-button {
+    position: relative;
+    /*bottom: 100px;*/
+}
+
 
 /*6B818C*/
 html {

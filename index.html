@@ -2,7 +2,10 @@
 <html>
     <head>
         <title>What Makes a Monster?</title>
+        <link rel="icon" type="image/x-icon" href="images/favicon_io/favicon.ico">
+        
         <link href="style.css" type="text/css" rel="stylesheet"/>
+        <script src="lib.js"></script>
     </head>
     <body>
         <header>
@@ -14,37 +17,287 @@
             </h2>
             <spacer type="vertical" height="50"/>
         </header>
-        
-        <h3>
-            Premise
-        </h3>
-        <p> 
-            In Dungeons & Dragons (or D&D), a group of players make characters and go on adventures in a fantasy world control by a special player called the Dungeon Master, or DM. The DM has countless responsabillities in the game, including playing as the enemies, building the world, writing the story, immproving to keep the story on track, and designing combat encounters to name just a few.
-            <br/>
-            <br/>
-            I've been DMing for years, and there's a consistent problem I've faced while setting up stories. The creators of D&D provide several hundred generic monsters to add in to your games. These monsters have a Challenge Rating (or CR) to describe how powerful they are and help DMs design fair encounters for their group's power level. 
-            <br/>
-            <br/>
-            But it won't be long before your game calls for a custom designed monster. The trouble is, it's very difficult to evaluate how powerful the monsters are. I can't tell you how many times I've made a monster thinking it was fair, only for my players to immediately crush it, or for the monster to be practically unkillable. So, it would be very useful to be able to determine what the CR of a monster should be given its abillities. 
-            <br/>
-            <br/>
-            This page will take you through my process of building a linear regression model to determine exactly that.
-        </p>
-        <center>
-            <blurb>
-                <b>Question:</b> How do we relate a monster's stats to its Challenge Rating?
-            </blurb>
-        </center>
-        <h3>
-            Part 1: The Data
-        </h3>
-        <p> 
-            A dataset containing information on every generic monster in D&D* is hosted on <a href='https://www.kaggle.com/datasets/mrpantherson/dnd-5e-monsters'>Kaggle.com</a>
-            <br>
+        <section>
+            <h3>
+                Premise
+            </h3>
+            <p> 
+                In Dungeons & Dragons (or D&D), a group of players make characters and go on adventures in a fantasy world control by a special player called the Dungeon Master, or DM. The DM has countless responsabillities in the game, including playing as the enemies, building the world, writing the story, immproving to keep the story on track, and designing combat encounters to name just a few.
+                <br/>
+                <br/>
+                I've been DMing for years, and there's a consistent problem I've faced while setting up stories. The creators of D&D provide several hundred generic monsters to add in to your games. These monsters have a Challenge Rating (or CR) to describe how powerful they are and help DMs design fair encounters for their group's power level. 
+                <br/>
+                <br/>
+                But it won't be long before your game calls for a custom designed monster. The trouble is, it's very difficult to evaluate how powerful the monsters are. I can't tell you how many times I've made a monster thinking it was fair, only for my players to immediately crush it, or for the monster to be practically unkillable. So, it would be very useful to be able to determine what the CR of a monster should be given its abillities. 
+                <br/>
+                <br/>
+                This page will take you through my process of building a linear regression model to determine exactly that.
+            </p>
             <center>
-                <i style="font-size:14px">*Dungeons and Dragons 5th edition, 2014 ruleset</i>
+                <blurb>
+                    <b>Question:</b> How do we relate a monster's stats to its Challenge Rating?
+                </blurb>
             </center>
-        </p>
+        </section>
+        <section>
+            <h3>
+                Part 1: The Data
+            </h3>
+            <p> 
+                A dataset containing information on every generic monster in D&D* is hosted on <a href='https://www.kaggle.com/datasets/mrpantherson/dnd-5e-monsters'>Kaggle.com</a>. This table has 762 rows, each representing a monster, but some of these columns will need to be discarded due to their lack of information. The tables has 17 columns, tracking different information about the monsters.
+                <center>
+                    <i style="font-size:14px">*Dungeons and Dragons 5th edition, 2014 ruleset</i>
+                </center>
+            </p>
+                <center>
+                    <table>
+                        <tr>
+                            <td>Column Name</td>
+                            <td>Format</td>
+                            <td>Meaning</td>
+                            <td>Usefulness</td>
+                        </tr>
+                        <tr>
+                            <td>Name</td>
+                            <td>text</td>
+                            <td>A monster's common name</td>
+                            <td>Simply used to refer to a particular monster</td>
+                        </tr>
+                        <tr>
+                            <td>URL</td>
+                            <td>text (web address)</td>
+                            <td>A link to a well formated webpage with more detailed information about each monster, hosted on <a href="https://www.aidedd.org/dnd-filters/monsters.php">aideed.org</a>.</td>
+                            <td>We will use these links for web scraping to supliment our data with some critical information.</td>
+                        </tr>
+                        <tr>
+                            <td>Challenge Rating</td>
+                            <td>fractions (stored as text)</td>
+                            <td>A monster's approximate power level, as decided by the game's designers.</td>
+                            <td>This is our regression target. Using the existing values in this data, we'll train a model to make informed estimations of this value for a given model.</td>
+                        </tr>
+                        <tr>
+                            <td>Type</td>
+                            <td>text</td>
+                            <td>Monsters in D&D are sorted into catagories like 'humanoids', 'dragons', 'beasts', and 'oozes'.</td>
+                            <td>Using the creature type, we can get a rough idea of a monster's abillities, like all dragons having a breath weapon. This may help us estimate how powerful a monster is.</td>
+                        </tr>
+                        <tr>
+                            <td>Size</td>
+                            <td>text (one of six catagories)</td>
+                            <td>Refers to a monster's 'footprint' on a 2d game board.</td>
+                            <td>Size has positives and negatives to monster power, but either way it's quite important to how a monster acts and what it can do. </td>
+                        </tr>
+                        <tr>
+                            <td>AC & HP</td>
+                            <td>integers</td>
+                            <td>To slightly simplify, these two numbers (Armor Class and Hit Points) describe how hard a monster is to defeat.</td>
+                            <td>These two factors are some of the more influential to a monster's power level, and will be critical for our regression.</td>
+                        </tr>
+                        <tr>
+                            <td>Speed (Types)</td>
+                            <td>text (list of types)</td>
+                            <td>This list of movement categories descibes how many ways a monster can move, like flying or swimming.</td>
+                            <td>A monster that can fly natrually has some large advantages, as does a swimming monster in the right setting. These abillities can decide the outcomes of battles, and may help decide a monster's power level.</td>
+                        </tr>
+                        <tr>
+                            <td>Legendary</td>
+                            <td>text</td>
+                            <td>A 'Legendary' monster has several additional, remarkably strong powers.</td>
+                            <td>Legendary powers turn a monster from a challenge to a crisis, and no doubt have a strong hand in a monster's power.</td>
+                        </tr>
+                        <tr>
+                            <td>Stats (Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma)</td>
+                            <td>integers (well, floats, but with no decimal values)</td>
+                            <td>These numbers are the bread and butter of any D&D monster or character, and describe what a monster is good and bad at. </td>
+                            <td>These stats are the most fundemental aspects of a monster's power, and will help us differentiate the more and less powerful.</td>
+                        </tr>
+                    </table>
+                </center>
+                <br>
+        </section>
+        <section>
+            <h3>
+                Part 2a: Data Cleaning & Supplimentation
+            </h3>
+            <p> 
+                The dataset has several issues that need to be solved before it can be used for statistical analysis.
+                <br/><br/>
+                First and formost, the data is full of null values. 
+            </p>
+                <center>
+                    <img src="images/Raw_data.PNG"/>
+                </center>
+            <p>
+
+                In this screenshot of the raw data, we can see that many of the monsters have missing values for their URL, Legendary statis, Speed, and all of their stats ('NaN' signifying missing data, or 'Not a Number').
+                <br><br>
+                It turns out, these missing values represent two very different issues. The Legendary and Speed columns use an a typical formating structure, where NaN represents a zero (or 'empty') value rather than a null value. 
+            </p>
+                <center>
+                <a href="https://www.reddit.com/r/ProgrammerHumor/comments/i83fot/what_is_the_difference_between_null_and_undefined/">
+                    <img src="images/zero-null-undefined-meme.webp" width=50% height=auto/>
+                </a>
+                </center>
+            <p>
+                This means that the data is usable and simply needs to be reformated. For the Speed value, this is simple: we fill in the NaN values with empty strings. The Legendary column is slightly more involved. Because a monster can only be legendary or not legendary, the column should be converted to boolean (true and false) data, with the NaN values become false and 'legendary' values becoming true. Additionally, we'll represent these boolean values with zeros (for false) and ones (for true).
+            </p>
+            <center>
+                <img src="images/Zero_nan_convertsion.PNG"/>
+            </center>
+            <p>
+                The NaN values in the URL and Stat columns are unfortunately genuine nulls. A NaN in the Strength column doesn't mean 'zero strength', it means 'I don't know'. This is much harder to resolve. However, notice that rows with NaN URLs also have all their stats as NaN, and looking at the rest of the data, this all or nothing pattern holds. 
+                <br><br>
+                There are 362 rows with null URLs and Stats in the data. While the missing Stats are inconveinent, the missing URLs are daming, as they'll prevent use from pulling more detailed information from the web for those monsters. Due to this, I've decided to simply omit these rows and leave only those with valid URLs. This leaves 400 rows representing 400 monsters.
+            </p>
+            <center>
+                <img src="images/Omission.PNG"/>
+            </center>
+            <p>
+                With the null values taken care of, the rest of the reformating is fairly simple. The stats can only be integer values, so we'll convert those six columns to integer data. The type values contain lots of detailed information that we can simplify by omitting all but the first word of each value. Then there's the oddities of the CR format...
+                <br><br>
+                In D&D, monsters can have one of 34 Challenge rating values: 1/8, 1/4, 1/2 or any integer from 0 to 30. This unusual system is convient for designing combat encounters, but cumbersome here. We'll convert these to float (decimal) values to make them simplier to use. When predicting a monster's CR after our model is ready, we can simply round the predicted decimal value to the nearest valid CR.
+            </p>
+            <center>
+                <img src="images/Cleaned_up.PNG"/>
+            </center>
+            <p>
+                With this, we have a range of cleaned, usable values, but not many of them. We're lacking some important information about the monsters, most importantly, information about how they attack. We have AC and HP to represent how hard they are to defeat, but each monsters has a range of unique abillities they can use to attack the players which is the critical second half of a monsters power. However, I can't blame the creator of this data set for not including this data, as it's not nearly so simple to represent. 
+                <br><br>
+                For a slightly more in-depth discussion of the mechanics of the game and how I've chosen which values to look for, you can refer to this <a href='tangent.html'>tangent page</a>, but this isn't critical to understanding the model. What is important is that we'll need to add these values to the data:
+            </p>
+            <center>
+                <table>
+                    <tr>
+                        <td>Column Name</td>
+                        <td>Format</td>
+                        <td>Meaning</td>
+                        <td>Usefulness</td>
+                    </tr>
+                    <tr>
+                        <td>Expected Damage</td>
+                        <td>float</td>
+                        <td>The <i>very</i> approximate amount of damage we expect a monster to deal to the players in a round, calculated as the highest expected base damage of all the monster's attack.</td>
+                        <td>This is one of the two critical elements describe how effective a monster's attacks are, making it an important indictator of monster power. </td>
+                    </tr>
+                    <tr>
+                        <td>Expected Hit Bonus</td>
+                        <td>integer</td>
+                        <td>The approximate accuracy of the monster's attacks, calculated at the hit bonus of the attack selected for the Expected Damage column.</td>
+                        <td>The other of the two critical attacking values. Some players are more vulnerable to a high damage, others to high accuracy, so it'll be interesting to see how these two attributes compare.</td>
+                    </tr>
+                    <tr>
+                        <td>Spell Save DC</td>
+                        <td>integer</td>
+                        <td>Roughly describes how powerful of a magic user the monster is, with 0 representing a non-magic-user.</td>
+                        <td>Magic is probably the most complex part of D&D, so it will be the hardest to represent, but this number should do a good job of informing the model of how dangerous this monster's magic is.</td>
+                    </tr>
+                    <tr>
+                        <td>Damage Type Effects</td>
+                        <td>strings</td>
+                        <td>Attacks in D&D have different damage types (fire, poison, slashing, etc). These three columns (Damage Resistance, Damage Immunity, and Damage Vulnerabillity) describe how a monster reacts to different damage types.</td>
+                        <td>Damage type effects are more important to some monsters than others, but some have their power level defined by these attributes, for good or ill.</td>
+                    </tr>
+                    <tr>
+                        <td>Condition Immunities</td>
+                        <td>text</td>
+                        <td>Refers to which status conditions (paralysis, fear, unconsciousness, etc) this monster is not effected by. </td>
+                        <td>The right condition immunity can make a monster significantly more complex and difficult to fight.</td>
+                    </tr>
+                    <tr>
+                        <td>Max Attack Range</td>
+                        <td>integer</td>
+                        <td>The maximum distance, in feet, a monster's attack can reach.</td>
+                        <td>This is a much less important offensive consideration than damage or hit bonus, but it can significanly effect how many options the players have, so it can strongly effect power level.</td>
+                    </tr>
+                    <tr>
+                        <td>Magic Resistence</td>
+                        <td>boolean (as 1/0 integers)</td>
+                        <td>A special abillity that reduces damage from all magical attacks.</td>
+                        <td>Magic using players are usually the most powerful, so being able to resist their effects can be a critical asset for a monster.</td>
+                    </tr>
+                </table>
+            </center>
+            <p>
+                To scrape this data, we'll be using the URLs in the table. Each URL leads to a page that looks like this:
+            </p>
+            <center>
+                <a href="https://www.aidedd.org/dnd/monstres.php?vo=empyrean">
+                    <img src="images/Empyrean_page.PNG"/>
+                </a>
+            </center>
+            <p>
+                This is the common format for monster stat blocks in Dungeons & Dragons, and luckilly we only need to pay attention to a small amount of this information.
+                <ul class="outer_list">
+                    <li>We'll check the Features section (the section with 'Saving Throws', 'Skills', etc) for Damage Type Tffects and Condition Immunities. Most of the time, we won't find anything, so we'll record an empty string in that column.</li>
+                    <li>Next, we'll need to check each of the Abillities (the paragraphs in black text that begin with bold text).
+                        <ul>
+                            <li>If the Abillity is named "Magic Resistance", we'll record a 1 in the Magic Resistance column.</li>
+                            <li>If the has the word "spellcasting" in it, we'll look through the text of the abillity for the Spell Save DC (monsters might have the Abillity "Spellcasting" or "Innate spellcasting", which are identical for our purposes, so we'll need to check for both).</li>
+                            <li>If the Abillity is an attack (which we'll know if its text include the string "Hit: "), we'll remember the Hit Bonus ("+XX to hit"), the base damage (the first instance of "Hit: XX "), and the range ("range XXX ft." or "reach XX ft."). Then, we'll need to find the maximum range, the maximum damage, and the Hit Bonus of the attack with maximum damage.</li>
+                        </ul>    
+                    </li>
+
+                </ul>
+            </p>
+            <center>
+                <img src="images/Empyrean_page_marked_up.PNG"/>
+            </center>
+            <p>
+                    The result of scraping all 400 monsters (which took around 2.5 minutes to run) looks like this (note that the other columns are still present, just omitted from this image):
+            </p>
+            <center>
+                <img src="images/Post_scrape.PNG"/>
+            </center>
+            <p>
+                As a final detail, we need to repair a few rows where the web scrapeing failed. The website we're using to scrape data has a somewhat inconsistant format and is missing some data. For instance, this page has no attack details.
+            </p>
+            <center>
+                <img src="images/Zariel.PNG"/>
+            </center>
+            <p>
+                In total, there are 29 monsters with 0 for their expected damage. A few of these are genuinly monsters with no base damage, but most of these had failed data scraping. I happen to own the books that these monster stats originally come from, so supplimenting our data is as simple as scouring the tomes. With these values filled in, we can start to analyise all of this data together.
+            </p>
+        </section>
+        <section>
+            <h3>
+                Part 2b: Data Exploration
+            </h3>
+            <p> 
+                Now that we have a sizeable and well-formated body of data, we can start to analyse how a monster's stats relate to its Challenge Rating. However, before drawing conclusions, it's important to understand what data we have and what kind of conclusions we can reliably draw from it.
+                <br><br>
+                The more data we have, the more accurate our conclusions will be, and this applies to each column. The more monster have that are legendary, for instance, the better our predictions about the effects of legendary status on CR will be. To gain a basic understanding of what kinds of data we have and how reliable our conclusions will be, we should look at what we have. 
+            </p>
+            <center>
+                <div id='container-1' onload="this.innerHTML = dataVis({
+                        'univariate_ac_hist': 'this is the AC histogram',
+                        'univariate_cr_hist': 'this is the CR histogram',
+                        'univariate_type_pie': 'this is the type pie chart',
+                    });">
+                <script>
+                    document.getElementById('container-1').innerHTML = dataVis({
+                        "univariate_ac_hist": "this is the AC histogram",
+                        "univariate_cr_hist": "this is the CR histogram",
+                        "univariate_type_pie": "this is the type pie chart",
+                    });
+                </script>
+            </center>
+            <p>
+                I have a few hypotheses about which stats track the closest with CR, and now we're able to test those ideas. Based on my experience as a DM, I'd guess that these stats (in descending order) are going to have the strongest corelation with CR:
+                <ol class="outer_list">
+                    <li>HP</li>
+                    <li>Expected Damage</li>
+                    <li>Spell Save DC</li>
+                    <li>Hit Bonus</li>
+                    <li>AC</li>
+                </ol>
+                In addition, I suspect that of the 6 basic stats (Strength, Dexterity, Constitution, Intelligence, Wisdom, and Charisma), Dexterity will have the best correlation with CR.
+                <br><br>
+                We can test this ideas by fitting these stats to CR and comparing their correlation coefficents. 
+            </p>
+            
+        </section>
+        
+        
         <embed type="text/html" src="plotly/hp_vs_cr.html" width="1000" height="600">
     </body>
 </html>
