@@ -410,19 +410,19 @@
                 <br><br>
                 However, before feeding the data into the model, it needs some processing to make it more machine-comprehensible. 
                 <br><br>
-                Our categorical data, size and type, won't play well with our mathmatical model. Instead of using text, we can use "One Hot Encoding" (real name) to convert these columns to grids of binary information.
+                Our simple nominal data, size and type, won't play well with our mathmatical model. Instead of using text, we can use "One Hot Encoding" (real name) to convert these columns to grids of binary information.
             </p>
             <center>
                 <img src="images/One_Hot_Encoding.PNG"/>
             </center>
             <p>
-                Similarly, we'll need to encode swimming and flying speed categories into two columns.
+                Similarly, we'll need to encode the nominal data in swimming and flying speed categories into two columns.
             </p>
             <center>
                 <img src="images/Speed_Encode.PNG"/>
             </center>
             <p>
-                Lastly, we need to handle our most complex data: The damage effects and condition immunities. There are 13 damage types and 12 conditions, so if we encoded this information the same way we did the speed information, we'll be adding 51 columns, none of which will have much useable data. Rather than this, my plan is to simply record the number of immunities, numbers of resistences, number of vulnerabillities, and number of condition immunities, which will be much more useful for the model. 
+                Lastly, we need to handle our most complex nominal data: The damage effects and condition immunities. There are 13 damage types and 12 conditions, so if we encoded this information the same way we did the speed information, we'll be adding 51 columns, none of which will have much useable data. Rather than this, my plan is to simply record the number of immunities, numbers of resistences, number of vulnerabillities, and number of condition immunities, which will be much more useful for the model. 
                 <br><br>
                 However, not all damage resistences are completely equal. Before take the count, I first check if the monster has the most important resistence or immunity: mundane damage. The is phrased as "bludgeoning, piercing and slashing damage from nonmagical attacks". This "Mundane Damage Resistence" is a powerful abillity that may be useful for determining CR. If I find the word "nonmagical" in a monster's damage resistences, I record it in its own column, and I do the same with immunities. After omiting any mundage damage resistences and immunities, I count the others, which are comparatively interchangable. 
             </p>
@@ -430,7 +430,8 @@
                 <img src="images/Damage_Encoding.PNG"/>
             </center>
             <p>
-                Rather than doing all of those steps on their own, which would force anyone who wants to use our model to make the same changes, all of these steps are put into a ColumnTransformer object using sklearn, so the process can be repeated on incoming data. 
+                
+                Rather than doing all of those steps on their own, which would force anyone who wants to use our model to make the same changes, all of these steps are put into a ColumnTransformer object using sklearn, so the process can be repeated on incoming data. We can also add an object to pass our quantitative (numerical) and ordinal (boolean) data through without modification.
             </p>
             <center>
                 <img src="images/Column_Transformer.PNG"/>
@@ -447,11 +448,27 @@
                 Finally, we feed this into a LASSO Regression object, then fit our model with our data. This will train a single model to predict CR given the data we've collected, but that's only one. 
                 <br><br>
                 Rather than creating one model, we'll use a GridSearchCV object to train 600 versions of our model and test which one has the best performance. We'll make each of the versions slightly different by modifying the settings of LASSO each time. We'll also set aside some of the data (20%) from each model's input and save it to test our models with, so that we can evaluate how accurate each one is. 
+                <br><br>
+                In particular, we'll be testing different values for Alpha, the amount the Lasso penalizes large coefficents, and tol, the treshold to complete training. 
             </p>
             <center>
                 <img src="images/GridSearch.PNG"/>
             </center>
+            <p>
+                After training our models, we find that an alpha of 0.4 and a tol of 0.000025 are the ideal parameter values of those we checked. This model has a Mean Squared Error of 2.25, suggesting that the model is, on average, 1.5 cr away from the real value. I would not consider this to be immpressive performance, and it probably has a similar performance to my intuition.
+                <br><br>
+                As far as the variables, we fed 42 into the LASSO regression, and it selected only 7 of them as being significant. Specifically, it selected Legendary, Magic Resistence, AC, HP (which has the highest weight), Intelligence, Expected hit bonus, and Spell Save DC. Especially surprising here is the stat Intelligence, which is notorious for having a limited effect on the game.
+            </p>
         </section>
+        <section>
+            <h3>
+                Part 5: The Final Model
+            </h3>
+            <p>
+                To improve out model, 
+            </p>
+        </section>
+        
         
     </body>
 </html>
