@@ -112,9 +112,29 @@ td {
     padding: 5px;
 }
 
-#chart-nav-button {
+.chart-nav-button {
+    font-size: 30px;
+    height: 80px;
+    background-color: #CC2936;
+    color: white;
     position: relative;
     /*bottom: 100px;*/
+    
+}
+
+
+.chart-nav-visible {
+    visibility: visible;
+    height: auto;
+    opacity: 1;
+    transition: opacity 0.5s linear;
+}
+
+.chart-nav-collapse {
+    visibility: collapse;
+    height: 0px;
+    opacity: 0;
+    transition: opacity 0.5s linear;
 }
 
 
