@@ -22,13 +22,13 @@
                 Premise
             </h3>
             <p> 
-                In Dungeons & Dragons (or D&D), a group of players make characters and go on adventures in a fantasy world control by a special player called the Dungeon Master, or DM. The DM has countless responsabillities in the game, including playing as the enemies, building the world, writing the story, immproving to keep the story on track, and designing combat encounters to name just a few.
+                In Dungeons & Dragons (or D&D), a group of players make characters and go on adventures in a fantasy world controlled by a special player called the Dungeon Master, or DM. The DM has countless responsibilities in the game, including playing as the enemies, building the world, writing the story, improving to keep the story on track, and designing combat encounters to name just a few.
                 <br/>
                 <br/>
-                I've been DMing for years, and there's a consistent problem I've faced while setting up stories. The creators of D&D provide several hundred generic monsters to add in to your games. These monsters have a Challenge Rating (or CR) to describe how powerful they are and help DMs design fair encounters for their group's power level. 
+                I've been DMing for years, and there's a consistent problem I've faced while setting up stories. The creators of D&D provide several hundred generic monsters to add into your games. These monsters have a Challenge Rating (or CR) to describe how powerful they are and help DMs design fair encounters for their group's power level. 
                 <br/>
                 <br/>
-                But it won't be long before your game calls for a custom designed monster. The trouble is, it's very difficult to evaluate how powerful the monsters are. I can't tell you how many times I've made a monster thinking it was fair, only for my players to immediately crush it, or for the monster to be practically unkillable. So, it would be very useful to be able to determine what the CR of a monster should be given its abillities. 
+                But it won't be long before your game calls for a custom designed monster. The trouble is, it's very difficult to evaluate how powerful the monsters are. I can't tell you how many times I've made a monster thinking it was fair, only for my players to immediately crush it, or for the monster to be practically unkillable. So, it would be very useful to be able to determine what the CR of a monster should be given its abilities. 
                 <br/>
                 <br/>
                 This page will take you through my process of building a linear regression model to determine exactly that.
@@ -44,7 +44,7 @@
                 Part 1: The Data
             </h3>
             <p> 
-                A dataset containing information on every generic monster in D&D* is hosted on <a href='https://www.kaggle.com/datasets/mrpantherson/dnd-5e-monsters'>Kaggle.com</a>. This table has 762 rows, each representing a monster, but some of these columns will need to be discarded due to their lack of information. The tables has 17 columns, tracking different information about the monsters.
+                A dataset containing information on every generic monster in D&D* is hosted on <a href='https://www.kaggle.com/datasets/mrpantherson/dnd-5e-monsters'>Kaggle.com</a>. This table has 762 rows, each representing a monster, but some of these columns will need to be discarded due to their lack of information. The table has 17 columns, tracking different information about the monsters.
                 <center>
                     <i style="font-size:14px">*Dungeons and Dragons 5th edition, 2014 ruleset</i>
                 </center>
@@ -66,8 +66,8 @@
                         <tr>
                             <td>URL</td>
                             <td>text (web address)</td>
-                            <td>A link to a well formated webpage with more detailed information about each monster, hosted on <a href="https://www.aidedd.org/dnd-filters/monsters.php">aideed.org</a>.</td>
-                            <td>We will use these links for web scraping to supliment our data with some critical information.</td>
+                            <td>A link to a well formatted webpage with more detailed information about each monster, hosted on <a href="https://www.aidedd.org/dnd-filters/monsters.php">aideed.org</a>.</td>
+                            <td>We will use these links for web scraping to supplement our data with some critical information.</td>
                         </tr>
                         <tr>
                             <td>Challenge Rating</td>
@@ -78,12 +78,12 @@
                         <tr>
                             <td>Type</td>
                             <td>text</td>
-                            <td>Monsters in D&D are sorted into catagories like 'humanoids', 'dragons', 'beasts', and 'oozes'.</td>
-                            <td>Using the creature type, we can get a rough idea of a monster's abillities, like all dragons having a breath weapon. This may help us estimate how powerful a monster is.</td>
+                            <td>Monsters in D&D are sorted into categories like 'humanoids', 'dragons', 'beasts', and 'oozes'.</td>
+                            <td>Using the creature type, we can get a rough idea of a monster's abilities, like all dragons having a breath weapon. This may help us estimate how powerful a monster is.</td>
                         </tr>
                         <tr>
                             <td>Size</td>
-                            <td>text (one of six catagories)</td>
+                            <td>text (one of six categories)</td>
                             <td>Refers to a monster's 'footprint' on a 2d game board.</td>
                             <td>Size has positives and negatives to monster power, but either way it's quite important to how a monster acts and what it can do. </td>
                         </tr>
@@ -96,8 +96,8 @@
                         <tr>
                             <td>Speed (Types)</td>
                             <td>text (list of types)</td>
-                            <td>This list of movement categories descibes how many ways a monster can move, like flying or swimming.</td>
-                            <td>A monster that can fly natrually has some large advantages, as does a swimming monster in the right setting. These abillities can decide the outcomes of battles, and may help decide a monster's power level.</td>
+                            <td>This list of movement categories describes how many ways a monster can move, like flying or swimming.</td>
+                            <td>A monster that can fly naturally has some large advantages, as does a swimming monster in the right setting. These abilities can decide the outcomes of battles, and may help decide a monster's power level.</td>
                         </tr>
                         <tr>
                             <td>Legendary</td>
@@ -109,7 +109,7 @@
                             <td>Stats (Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma)</td>
                             <td>integers (well, floats, but with no decimal values)</td>
                             <td>These numbers are the bread and butter of any D&D monster or character, and describe what a monster is good and bad at. </td>
-                            <td>These stats are the most fundemental aspects of a monster's power, and will help us differentiate the more and less powerful.</td>
+                            <td>These stats are the most fundamental aspects of a monster's power, and will help us differentiate the more and less powerful.</td>
                         </tr>
                     </table>
                 </center>
@@ -117,21 +117,21 @@
         </section>
         <section>
             <h3>
-                Part 2a: Data Cleaning & Supplimentation
+                Part 2a: Data Cleaning & Supplementation
             </h3>
             <p> 
                 The dataset has several issues that need to be solved before it can be used for statistical analysis.
                 <br/><br/>
-                First and formost, the data is full of null values. 
+                First and foremost, the data is full of null values. 
             </p>
                 <center>
                     <img src="images/Raw_data.PNG"/>
                 </center>
             <p>
 
-                In this screenshot of the raw data, we can see that many of the monsters have missing values for their URL, Legendary statis, Speed, and all of their stats ('NaN' signifying missing data, or 'Not a Number').
+                In this screenshot of the raw data, we can see that many of the monsters have missing values for their URL, Legendary status, Speed, and all of their stats ('NaN' signifying missing data, or 'Not a Number').
                 <br><br>
-                It turns out, these missing values represent two very different issues. The Legendary and Speed columns use an a typical formating structure, where NaN represents a zero (or 'empty') value rather than a null value. 
+                It turns out, these missing values represent two very different issues. The Legendary and Speed columns use a typical formating structure, where NaN represents a zero (or 'empty') value rather than a null value. 
             </p>
                 <center>
                 <a href="https://www.reddit.com/r/ProgrammerHumor/comments/i83fot/what_is_the_difference_between_null_and_undefined/">
@@ -139,7 +139,7 @@
                 </a>
                 </center>
             <p>
-                This means that the data is usable and simply needs to be reformated. For the Speed value, this is simple: we fill in the NaN values with empty strings. The Legendary column is slightly more involved. Because a monster can only be legendary or not legendary, the column should be converted to boolean (true and false) data, with the NaN values become false and 'legendary' values becoming true. Additionally, we'll represent these boolean values with zeros (for false) and ones (for true).
+                This means that the data is usable and simply needs to be formatted. For the Speed value, this is simple: we fill in the NaN values with empty strings. The Legendary column is slightly more involved. Because a monster can only be legendary or not legendary, the column should be converted to boolean (true and false) data, with the NaN values becoming false and 'legendary' values becoming true. Additionally, we'll represent these boolean values with zeros (for false) and ones (for true).
             </p>
             <center>
                 <img src="images/Zero_nan_convertsion.PNG"/>
@@ -147,21 +147,21 @@
             <p>
                 The NaN values in the URL and Stat columns are unfortunately genuine nulls. A NaN in the Strength column doesn't mean 'zero strength', it means 'I don't know'. This is much harder to resolve. However, notice that rows with NaN URLs also have all their stats as NaN, and looking at the rest of the data, this all or nothing pattern holds. 
                 <br><br>
-                There are 362 rows with null URLs and Stats in the data. While the missing Stats are inconveinent, the missing URLs are daming, as they'll prevent use from pulling more detailed information from the web for those monsters. Due to this, I've decided to simply omit these rows and leave only those with valid URLs. This leaves 400 rows representing 400 monsters.
+                There are 362 rows with null URLs and Stats in the data. While the missing Stats are inconvenient, the missing URLs are daming, as they'll prevent us from pulling more detailed information from the web for those monsters. Due to this, I've decided to simply omit these rows and leave only those with valid URLs. This leaves 400 rows representing 400 monsters.
             </p>
             <center>
                 <img src="images/Omission.PNG"/>
             </center>
             <p>
-                With the null values taken care of, the rest of the reformating is fairly simple. The stats can only be integer values, so we'll convert those six columns to integer data. The type values contain lots of detailed information that we can simplify by omitting all but the first word of each value. Then there's the oddities of the CR format...
+                With the null values taken care of, the rest of the formatting is fairly simple. The stats can only be integer values, so we'll convert those six columns to integer data. The type values contain lots of detailed information that we can simplify by omitting all but the first word of each value. Then there's the oddities of the CR format...
                 <br><br>
-                In D&D, monsters can have one of 34 Challenge rating values: 1/8, 1/4, 1/2 or any integer from 0 to 30. This unusual system is convient for designing combat encounters, but cumbersome here. We'll convert these to float (decimal) values to make them simplier to use. When predicting a monster's CR after our model is ready, we can simply round the predicted decimal value to the nearest valid CR.
+                In D&D, monsters can have one of 34 Challenge rating values: 1/8, 1/4, 1/2 or any integer from 0 to 30. This unusual system is convenient for designing combat encounters, but cumbersome here. We'll convert these to float (decimal) values to make them simpler to use. When predicting a monster's CR after our model is ready, we can simply round the predicted decimal value to the nearest valid CR.
             </p>
             <center>
                 <img src="images/Cleaned_up.PNG"/>
             </center>
             <p>
-                With this, we have a range of cleaned, usable values, but not many of them. We're lacking some important information about the monsters, most importantly, information about how they attack. We have AC and HP to represent how hard they are to defeat, but each monsters has a range of unique abillities they can use to attack the players which is the critical second half of a monsters power. However, I can't blame the creator of this data set for not including this data, as it's not nearly so simple to represent. 
+                With this, we have a range of cleaned, usable values, but not many of them. We're lacking some important information about the monsters, most importantly, information about how they attack. We have AC and HP to represent how hard they are to defeat, but each monster has a range of unique abilities they can use to attack the players which is the critical second half of a monster's power. However, I can't blame the creator of this data set for not including this data, as it's not nearly so simple to represent. 
                 <br><br>
                 For a slightly more in-depth discussion of the mechanics of the game and how I've chosen which values to look for, you can refer to this <a href='tangent.html'>tangent page</a>, but this isn't critical to understanding the model. What is important is that we'll need to add these values to the data:
             </p>
@@ -177,7 +177,7 @@
                         <td>Expected Damage</td>
                         <td>float</td>
                         <td>The <i>very</i> approximate amount of damage we expect a monster to deal to the players in a round, calculated as the highest expected base damage of all the monster's attack.</td>
-                        <td>This is one of the two critical elements describe how effective a monster's attacks are, making it an important indictator of monster power. </td>
+                        <td>This is one of the two critical elements describing how effective a monster's attacks are, making it an important indicator of monster power. </td>
                     </tr>
                     <tr>
                         <td>Expected Hit Bonus</td>
@@ -194,25 +194,25 @@
                     <tr>
                         <td>Damage Type Effects</td>
                         <td>strings</td>
-                        <td>Attacks in D&D have different damage types (fire, poison, slashing, etc). These three columns (Damage Resistance, Damage Immunity, and Damage Vulnerabillity) describe how a monster reacts to different damage types.</td>
+                        <td>Attacks in D&D have different damage types (fire, poison, slashing, etc). These three columns (Damage Resistance, Damage Immunity, and Damage Vulnerability) describe how a monster reacts to different damage types.</td>
                         <td>Damage type effects are more important to some monsters than others, but some have their power level defined by these attributes, for good or ill.</td>
                     </tr>
                     <tr>
                         <td>Condition Immunities</td>
                         <td>text</td>
-                        <td>Refers to which status conditions (paralysis, fear, unconsciousness, etc) this monster is not effected by. </td>
+                        <td>Refers to which status conditions (paralysis, fear, unconsciousness, etc) this monster is not affected by. </td>
                         <td>The right condition immunity can make a monster significantly more complex and difficult to fight.</td>
                     </tr>
                     <tr>
                         <td>Max Attack Range</td>
                         <td>integer</td>
                         <td>The maximum distance, in feet, a monster's attack can reach.</td>
-                        <td>This is a much less important offensive consideration than damage or hit bonus, but it can significanly effect how many options the players have, so it can strongly effect power level.</td>
+                        <td>This is a much less important offensive consideration than damage or hit bonus, but it can significantly affect how many options the players have, so it can strongly effect power level.</td>
                     </tr>
                     <tr>
-                        <td>Magic Resistence</td>
+                        <td>Magic Resistance</td>
                         <td>boolean (as 1/0 integers)</td>
-                        <td>A special abillity that reduces damage from all magical attacks.</td>
+                        <td>A special ability that reduces damage from all magical attacks.</td>
                         <td>Magic using players are usually the most powerful, so being able to resist their effects can be a critical asset for a monster.</td>
                     </tr>
                 </table>
@@ -226,14 +226,14 @@
                 </a>
             </center>
             <p>
-                This is the common format for monster stat blocks in Dungeons & Dragons, and luckilly we only need to pay attention to a small amount of this information.
+                This is the common format for monster stat blocks in Dungeons & Dragons, and luckily we only need to pay attention to a small amount of this information.
                 <ul class="outer_list">
-                    <li>We'll check the Features section (the section with 'Saving Throws', 'Skills', etc) for Damage Type Tffects and Condition Immunities. Most of the time, we won't find anything, so we'll record an empty string in that column.</li>
-                    <li>Next, we'll need to check each of the Abillities (the paragraphs in black text that begin with bold text).
+                    <li>We'll check the Features section (the section with 'Saving Throws', 'Skills', etc) for Damage Type Effects and Condition Immunities. Most of the time, we won't find anything, so we'll record an empty string in that column.</li>
+                    <li>Next, we'll need to check each of the Abilities (the paragraphs in black text that begin with bold text).
                         <ul>
-                            <li>If the Abillity is named "Magic Resistance", we'll record a 1 in the Magic Resistance column.</li>
-                            <li>If the has the word "spellcasting" in it, we'll look through the text of the abillity for the Spell Save DC (monsters might have the Abillity "Spellcasting" or "Innate spellcasting", which are identical for our purposes, so we'll need to check for both).</li>
-                            <li>If the Abillity is an attack (which we'll know if its text include the string "Hit: "), we'll remember the Hit Bonus ("+XX to hit"), the base damage (the first instance of "Hit: XX "), and the range ("range XXX ft." or "reach XX ft."). Then, we'll need to find the maximum range, the maximum damage, and the Hit Bonus of the attack with maximum damage.</li>
+                            <li>If the Ability is named "Magic Resistance", we'll record a 1 in the Magic Resistance column.</li>
+                            <li>If the has the word "spellcasting" in it, we'll look through the text of the ability for the Spell Save DC (monsters might have the Ability "Spellcasting" or "Innate spellcasting", which are identical for our purposes, so we'll need to check for both).</li>
+                            <li>If the Ability is an attack (which we'll know if its text include the string "Hit: "), we'll remember the Hit Bonus ("+XX to hit"), the base damage (the first instance of "Hit: XX "), and the range ("range XXX ft." or "reach XX ft."). Then, we'll need to find the maximum range, the maximum damage, and the Hit Bonus of the attack with maximum damage.</li>
                         </ul>    
                     </li>
 
@@ -249,13 +249,13 @@
                 <img src="images/Post_scrape.PNG"/>
             </center>
             <p>
-                As a final detail, we need to repair a few rows where the web scrapeing failed. The website we're using to scrape data has a somewhat inconsistant format and is missing some data. For instance, this page has no attack details.
+                As a final detail, we need to repair a few rows where the web scraping failed. The website we're using to scrape data has a somewhat inconsistent format and is missing some data. For instance, this page has no attack details.
             </p>
             <center>
                 <img src="images/Zariel.PNG"/>
             </center>
             <p>
-                In total, there are 29 monsters with 0 for their expected damage. A few of these are genuinly monsters with no base damage, but most of these had failed data scraping. I happen to own the books that these monster stats originally come from, so supplimenting our data is as simple as scouring the tomes. With these values filled in, we can start to analyise all of this data together.
+                In total, there are 29 monsters with 0 for their expected damage. A few of these are genuinely monsters with no base damage, but most of these had failed data scraping. I happen to own the books that these monster stats originally come from, so supplementing our data is as simple as scouring the tomes. With these values filled in, we can start to analyze all of this data together.
             </p>
         </section>
         <section>
@@ -263,9 +263,9 @@
                 Part 2b: Data Exploration
             </h3>
             <p> 
-                Now that we have a sizeable and well-formated body of data, we can start to analyse how a monster's stats relate to its Challenge Rating. However, before drawing conclusions, it's important to understand what data we have and what kind of conclusions we can reliably draw from it.
+                Now that we have a sizable and well-formatted body of data, we can start to analyse how a monster's stats relate to its Challenge Rating. However, before drawing conclusions, it's important to understand what data we have and what kind of conclusions we can reliably draw from it.
                 <br><br>
-                The more data we have, the more accurate our conclusions will be, and this applies to each column. The more monster have that are legendary, for instance, the better our predictions about the effects of legendary status on CR will be. To gain a basic understanding of what kinds of data we have and how reliable our conclusions will be, we should look at what we have. 
+                The more data we have, the more accurate our conclusions will be, and this applies to each column. The more monsters that are legendary, for instance, the better our predictions about the effects of legendary status on CR are likely to be. To gain a basic understanding of what kinds of data we have and how reliable our conclusions will be, we should look at what we have. 
             </p>
             <center>
                 <div id="chart-vis-1">
@@ -273,24 +273,24 @@
                 <script>
                     vis = new DataVis({
                         'univariate_cr_hist': 'In this histogram, we can clearly see that the vast majority of monsters in the dataset have a CR below 6, and that the distribution is a clear exponential decay. This means that our model has more data for, and will thus be better at predicting, lower CR values.',
-                        'univariate_ac_hist': 'AC values are nearly normally distributed and fairly well grouped between 10 and 19, which is actually one of the defining principles of D&D 5th edition <a href = "https://dungeonsdragons.fandom.com/wiki/Bounded_accuracy">Bounded Accuracy</a>. AC values will also very likely be within this range for any monster stats we input, since 5th edition requires AC to be restricted. This limitation of range will be advantagous for the accuracy our predictions, but will also be problematic for some outliers. Our model will struggle to understand the impact of extreme AC values (in either direction).',
-                        'univariate_ed_hist': 'Expected Damage values between 4 and 23 have significant quantities of data (with annother exponential decay) with a sharp drop-off in either direction. It\'s worth awknowleging here that Expected Damage is extremely difficult to calculate and the approximation here is very rough. We can expect our model to stuggle with evaluating the power level of Expected Damage values of 24 and above due to a lack of data.',
-                        'univariate_ehb_hist': 'This (nearly) normal distribution is annother result of Bounded Accuracy philosphy that makes our AC values bounded arround a few finite values, but here the pattern is even more strong. To hit values above 10 are very rare in practice, meaning our model has ample data for the overwhelming majority of AC values we\'ll be throwing at it.',
-                        'univariate_ssd_hist': 'This histogram clearly displays that the vast majority (85%) of our monsters have no access to spells. To more clearly analyise this data, we can look at the next chart.',
-                        'univariate_ssd_sz_hist': 'Spell Save DCs, which we\'re using to approximate the strength a monster\'s magic, are annother attribute normal(ish)ly distributed by Bounded Accuracy. However, the overall lack of data on spellcasters will affect our model\'s abillity to predict the power of mages. Values between 10 and 15 have at least 10 entries, and most spellcasters will be within this range. However, magic specialist monsters, like liches and other major villains, <i>are</i> likely to have a Spell Save above 15, so out model may stuggle with evil magi. monsters that supliment their abillities with lesser magic will be much easier to predict the Power Level for.' ,
+                        'univariate_ac_hist': 'AC values are nearly normally distributed and fairly well grouped between 10 and 19, which is actually one of the defining principles of D&D 5th edition <a href = "https://dungeonsdragons.fandom.com/wiki/Bounded_accuracy">Bounded Accuracy</a>. AC values will also very likely be within this range for any monster stats we input, since 5th edition requires AC to be restricted. This limitation of range will be advantageous for the accuracy of our predictions, but will also be problematic for some outliers. Our model will struggle to understand the impact of extreme AC values (in either direction).',
+                        'univariate_ed_hist': 'Expected Damage values between 4 and 23 have significant quantities of data (with another exponential decay) with a sharp drop-off in either direction. It\'s worth acknowledging here that Expected Damage is extremely difficult to calculate and the approximation here is very rough. We can expect our model to struggle with evaluating the power level of Expected Damage values of 24 and above due to a lack of data.',
+                        'univariate_ehb_hist': 'This (nearly) normal distribution is another result of Bounded Accuracy philosophy that makes our AC values bounded around a few finite values, but here the pattern is even more strong. To hit values above 10 are very rare in practice, meaning our model has ample data for the overwhelming majority of AC values we\'ll be throwing at it.',
+                        'univariate_ssd_hist': 'This histogram clearly displays that the vast majority (85%) of our monsters have no access to spells. To more clearly analyze this data, we can look at the next chart.',
+                        'univariate_ssd_sz_hist': 'Spell Save DCs, which we\'re using to approximate the strength of a monster\' s magic, are another attribute normal(ish)ly distributed by Bounded Accuracy. However, the overall lack of data on spellcasters will affect our model\'s ability to predict the power of mages. Values between 10 and 15 have at least 10 entries, and most spellcasters will be within this range. However, magic specialist monsters, like liches and other major villains, <i>are</i> likely to have a Spell Save above 15, so our model may struggle with evil magi. monsters that supplement their abilities with lesser magic will be much easier to predict the Power Level for.' ,
                         'univariate_hp_hist': 'Hit Points have a strong exponential decay and wide range of values. the 160-179 category is the last one with more than 10 entries, so we can expect monsters with 180 or greater Hit Points to be harder for our model to evaluate.',
-                        'univariate_mar_hist': 'While this value may have an impact on our model\'s accuracy, it\'s on of the data points that I think may have little or no impact on the model, and is largely being included to test that hypothesis. This distribution is the most unusual one yet, with a strong expontential decay up to 30-39ft (because the number 30ft is very significant in D&D, as it\'s the distance more players and monsters can move between attacks) with the rest of the data grouped into 3 apparent clusters around 60, 90, and 150. Monsters that don\'t have a maximum range within one of the these boundaries may confound our model.',
+                        'univariate_mar_hist': 'While this value may have an impact on our model\'s accuracy, it\'s on of the data points that I think may have little or no impact on the model, and is largely being included to test that hypothesis. This distribution is the most unusual one yet, with a strong exponential decay up to 30-39ft (because the number 30ft is very significant in D&D, as it\'s the distance more players and monsters can move between attacks) with the rest of the data grouped into 3 apparent clusters around 60, 90, and 150. Monsters that don\'t have a maximum range within one of the these boundaries may confound our model.',
                         'univariate_legendary_pie': 'Our dataset includes 35 Legendary monsters (and 365 non-legendary ones). It will be interested to see how accurately our model can predict the CR of Legendary monsters, and thus whether or not this is enough data for our model to factor Legendary status into power level.',
-                        'univariate_mr_pie': '48 of our monsters have Magic Resistence, meaning that our model will likely have a better understanding of it than Legendary Status. ',
+                        'univariate_mr_pie': '48 of our monsters have Magic Resistance, meaning that our model will likely have a better understanding of it than Legendary Status. ',
                         'univariate_size_pie': 'Unsurprisingly, the extreme ends of the Size spectrum (tiny and gargantuan) are the smallest ones. There are 16 gargantuan monsters, which I hope should be enough for the model to have a strong understanding. I also don\'t expect the size category to have a significant impact on power level, but I\'m interested to see what the numbers say.',
                         'univariate_speed_pie': 'We can see that all three categories of SPeed have a large number of monsters. This even distribution exactly what we want to see from a linear regression data point, since we have lots of information about all groups.',
-                        'univariate_type_pie': 'This is perhaps the data column that I\'m the most suspicous of. Creature Type has minimal mechanical effect on the game, but the model may be able to use it as an estimate for what a monster can do. This distribution does not bode well for the useabillity of the data. 7 of the 15 categories have 10 or few datapoints, and we can expect our model to have a limited understanding of these rarer types.'
+                        'univariate_type_pie': 'This is perhaps the data column that I\'m the most suspicious of. Creature Type has minimal mechanical effect on the game, but the model may be able to use it as an estimate for what a monster can do. This distribution does not bode well for the usability of the data. 7 of the 15 categories have 10 or few data points, and we can expect our model to have a limited understanding of these rarer types.'
                     });
                     document.getElementById("chart-vis-1").appendChild(vis.get_form_ob());
                 </script>
             </center>
             <p>
-                I have a few hypotheses about which stats track the closest with CR, and now we're able to test those ideas. Based on my experience as a DM, I'd guess that these stats (in descending order) are going to have the strongest corelation with CR:
+                I have a few hypotheses about which stats track the closest with CR, and now we're able to test those ideas. Based on my experience as a DM, I'd guess that these stats (in descending order) are going to have the strongest correlation with CR:
             </p>
             <p>
                 <ol class="outer_list">
@@ -304,7 +304,7 @@
             <p>
             <!--     In addition, I suspect that of the 6 basic stats (Strength, Dexterity, Constitution, Intelligence, Wisdom, and Charisma), Dexterity will have the best correlation with CR.
                 <br><br> -->
-                We can test these ideas by fitting these data to CR and comparing their correlation coefficents. 
+                We can test these ideas by fitting these data to CR and comparing their correlation coefficients. 
             </p>
             <center>
                 <div id="chart-vis-2">
@@ -317,7 +317,7 @@
                         'bivariate_ssd_reg': 'Due to the zero values in this data, this regression is meaningless for all practical purposes.',
                         'bivariate_ssd_sz_reg': 'Here, we see that the Spell Save DC is an incredibly strong predictor of CR for spellcasters. This may be because of our small sample size, but it\'s clear that Spell Save DC is a great marker of power level for spellcasters.',
                         'bivariate_ehb_reg': 'I was very surprised by the strength of this correlation, because in my own experience with that game I\'ve noticed that Hit Bonuses tend to stay within a small range due to Bounded Accuracy. However, it clearly seems that my experience is not representative of reality, as Expected Hit Bonus acts as a strong predictor of CR.',
-                        'bivariate_ac_reg': 'This correlation is quite poor, which is probably a good thing from a game design perspective. If a monster\'s AC value is too high, players are likely to miss when they attack, dealing no damage. This is generally considered \'no fun\', so most monsters are designed with an intentially limited AC for a better play experience.',
+                        'bivariate_ac_reg': 'This correlation is quite poor, which is probably a good thing from a game design perspective. If a monster\'s AC value is too high, players are likely to miss when they attack, dealing no damage. This is generally considered \'no fun\', so most monsters are designed with an intentionally limited AC for a better play experience.',
                     });//, 2);
                     document.getElementById("chart-vis-2").appendChild(vis.get_form_ob());
                 </script>
@@ -326,7 +326,7 @@
                 <table>
                     <tr>
                         <td>Data Column</td>
-                        <td>R Squarded</td>
+                        <td>R Squared</td>
                     </tr>
                     <tr>
                         <td>HP</td>
@@ -353,7 +353,7 @@
             <p>
                 As we can see, most of my ordering was wrong, although I was right about the attribute with the strongest correlation. However, Expected Damage is not as strong an indicator of CR as I had hoped, and Spell Save DC is confounded by the overwhelming corpus of magicless monsters.
                 <br><br>
-                I had assumed that Bounded Accuracy would mean that AC wouldn't have enough variablillity to predict CR, but it turns out that AC tracks incredibly closely with CR. And while AC is a poor indicator of CR by itself as I expected, it's better than Expected Damage and Spell Save DC.
+                I had assumed that Bounded Accuracy would mean that AC wouldn't have enough variability to predict CR, but it turns out that AC tracks incredibly closely with CR. And while AC is a poor indicator of CR by itself as I expected, it's better than Expected Damage and Spell Save DC.
                 <br><br>
                 While we're exploring the data, I want to take a look at Type, the column I'm the most suspicious of.
             </p>
@@ -380,9 +380,9 @@
             <p>
                 My goal is to create a statistical model that can generate a Challenge Rating for an original monster given its stats. 
                 <br><br>
-                Because our goal is to predict a numerical value, we need to construct a <strong>Regression Model</strong>. The core of this model will be a mathmatical formula that takes in the values we've prepared, multiplies them by some coefficents, and produces a number that should be close to the actual CR value for that monster. To find what coefficents to use, we'll pick an <strong>Evaluation Metric</strong> and try many values of these coefficents until we've minimized the evaluation metric. I've chosen to use <strong>Mean Squared Error with LASSO Regularization</strong> as the evaluation metric for this model. 
+                Because our goal is to predict a numerical value, we need to construct a <strong>Regression Model</strong>. The core of this model will be a mathematical formula that takes in the values we've prepared, multiplies them by some coefficients, and produces a number that should be close to the actual CR value for that monster. To find what coefficients to use, we'll pick an <strong>Evaluation Metric</strong> and find values of these coefficients that minimize the evaluation metric. I've chosen to use <strong>Mean Squared Error with LASSO Regularization</strong> as the evaluation metric for this model. 
                 <br><br>
-                Mean Squared Error has several advantage over alternatives like Mean Absolute Error, namely the fact that it is differentiable and the fact that it produces a function that considers outliers. Using LASSO regularization will incentivize the system to produce small coefficents, which is desirable for reducing variabillity and preventing overfitting. LASSO can also help us determine if any of our datapoints aren't useful for predicting CR, as it will push their coefficeints to zero, potentially simplifying our model.
+                Mean Squared Error has several advantages over alternatives like Mean Absolute Error, namely the fact that it is differentiable and the fact that it produces a function that considers outliers. Using LASSO regularization will incentivize the system to produce small coefficients, which is desirable for reducing variability and preventing overfitting. LASSO can also help us determine if any of our data points aren't useful for predicting CR, as it will push their coefficients to zero, potentially simplifying our model.
             </p>
             <center>
                 <table>
@@ -410,7 +410,7 @@
                 <br><br>
                 However, before feeding the data into the model, it needs some processing to make it more machine-comprehensible. 
                 <br><br>
-                Our simple nominal data, size and type, won't play well with our mathmatical model. Instead of using text, we can use "One Hot Encoding" (real name) to convert these columns to grids of binary information.
+                Our simple nominal data, size and type, won't play well with our mathematical model. Instead of using text, we can use "One Hot Encoding" (real name) to convert these columns to grids of binary information.
             </p>
             <center>
                 <img src="images/One_Hot_Encoding.PNG"/>
@@ -422,9 +422,9 @@
                 <img src="images/Speed_Encode.PNG"/>
             </center>
             <p>
-                Lastly, we need to handle our most complex nominal data: The damage effects and condition immunities. There are 13 damage types and 12 conditions, so if we encoded this information the same way we did the speed information, we'll be adding 51 columns, none of which will have much useable data. Rather than this, my plan is to simply record the number of immunities, numbers of resistences, number of vulnerabillities, and number of condition immunities, which will be much more useful for the model. 
+                Lastly, we need to handle our most complex nominal data: The damage effects and condition immunities. There are 13 damage types and 12 conditions, so if we encoded this information the same way we did the speed information, we'll be adding 51 columns, none of which will have much usable data. Rather than this, my plan is to simply record the number of immunities, numbers of resistances, number of vulnerabilities, and number of condition immunities, which will be much more useful for the model. 
                 <br><br>
-                However, not all damage resistences are completely equal. Before take the count, I first check if the monster has the most important resistence or immunity: mundane damage. The is phrased as "bludgeoning, piercing and slashing damage from nonmagical attacks". This "Mundane Damage Resistence" is a powerful abillity that may be useful for determining CR. If I find the word "nonmagical" in a monster's damage resistences, I record it in its own column, and I do the same with immunities. After omiting any mundage damage resistences and immunities, I count the others, which are comparatively interchangable. 
+                However, not all damage resistances are completely equal. Before take the count, I first check if the monster has the most important resistance or immunity: mundane damage. The is phrased as "bludgeoning, piercing and slashing damage from nonmagical attacks". This "Mundane Damage Resistance" is a powerful ability that may be useful for determining CR. If I find the word "nonmagical" in a monster's damage resistances, I record it in its own column, and I do the same with immunities. After omitting any mundage damage resistances and immunities, I count the others, which are comparatively interchangeable. 
             </p>
             <center>
                 <img src="images/Damage_Encoding.PNG"/>
@@ -439,7 +439,7 @@
             <p>
                 Next, we put the data through a StandardScaler object. This puts all of the data on the same scale, which allows us to directly interpret the coefficients. 
                 <br><br>
-                For example, the HP column of our data ranges from 1 to 600 and our legendary column ranges from 0 to 1. If we saw that HP had a coefficent of 10 and legendary had a coefficent of 500, we couldn't confidently say which is more important. When we standardize data, we converts each entry in each column to a standard deviation score, which puts all the data on the same scale without losing information.
+                For example, the HP column of our data ranges from 1 to 600 and our legendary column ranges from 0 to 1. If we saw that HP had a coefficient of 10 and legendary had a coefficient of 500, we couldn't confidently say which is more important. When we standardize data, we convert each entry in each column to a standard deviation score, which puts all the data on the same scale without losing information.
             </p>
             <center>
                 <img src="images/Std_Scale.PNG"/>
@@ -449,15 +449,33 @@
                 <br><br>
                 Rather than creating one model, we'll use a GridSearchCV object to train 600 versions of our model and test which one has the best performance. We'll make each of the versions slightly different by modifying the settings of LASSO each time. We'll also set aside some of the data (20%) from each model's input and save it to test our models with, so that we can evaluate how accurate each one is. 
                 <br><br>
-                In particular, we'll be testing different values for Alpha, the amount the Lasso penalizes large coefficents, and tol, the treshold to complete training. 
+                In particular, we'll be testing different values for Alpha, the amount the Lasso penalizes large coefficients, and tol, the threshold to complete training. 
             </p>
             <center>
                 <img src="images/GridSearch.PNG"/>
             </center>
             <p>
-                After training our models, we find that an alpha of 0.4 and a tol of 0.000025 are the ideal parameter values of those we checked. This model has a Mean Squared Error of 2.25, suggesting that the model is, on average, 1.5 cr away from the real value. I would not consider this to be immpressive performance, and it probably has a similar performance to my intuition.
+                After training our models, we find that an alpha of 0.5 and a tol of 0.00001 are the ideal parameter values of those we checked. This model has a Mean Squared Error of 2.7336, suggesting that the model is, on average, about 1.5 cr away from the real value. I would not consider this to be 'good' performance, and it probably has a similar performance to my intuition...
                 <br><br>
-                As far as the variables, we fed 42 into the LASSO regression, and it selected only 7 of them as being significant. Specifically, it selected Legendary, Magic Resistence, AC, HP (which has the highest weight), Intelligence, Expected hit bonus, and Spell Save DC. Especially surprising here is the stat Intelligence, which is notorious for having a limited effect on the game.
+                As far as the variables, we fed 42 into the LASSO regression, and it selected only 8 of them as being significant. Specifically, it selected legendary, magic resistance, ac, hp, int, cha, expected hit bonus, and spell save dc. Especially surprising here is the stat Intelligence, which is notorious for having a limited effect on the game.
+            </p>
+        </section>
+        <section>
+            <h3>
+                Part 4.5: What is 'good'?
+            </h3>
+            <p>
+                How do we qualify if the model has 'good' performance or not? Let's consider the goal: We want to create a model that can be used to predict a monster's Challenge Rating given its attributes, so that DMs (like me) can more easily and accurately determine what the cr of their custom monsters should be. So... we should be testing it against a DM.
+                <br><br>
+                I decided to calculate my own Mean Squared Error at the same task the model is attempting. To do this, I opened the monster book to a random page, covered the Challenge Rating with my finger, and (assuming I didn't know it off the top of my head) I'd try to guess its Challenge Rating based on its stats. I did this for 25 monsters, and my results looked like this:
+            </p>
+            <center>
+                <img src='images/Sean_Guess.PNG'/>
+            </center>
+            <p>
+                To calculate my Mean Squared Error, I need to take the average of the squares of the differences between my guesses and the real values. Using the Pandas library, I find that my MSE is <strong>2.725</strong>. Given that the baseline model had a final MSE of <strong>2.7336</strong>. It is of course very close to the Baseline model, and it's fair to call the model as good as me, but I wouldn't call that good. This is a lot of work for no improvement!
+                <br><br>
+                To qualify a model as 'good', I would need it to be better than me. That makes 2.725 the number the beat.
             </p>
         </section>
         <section>
@@ -465,10 +483,41 @@
                 Part 5: The Final Model
             </h3>
             <p>
-                To improve out model, 
+                In an effort to make myself obsolete, my goal is to tune the model such that it becomes more accurate than me (and by extension the baseline model). To do this, I'm going to add several values into the training input:
+            </p>
+            <center>
+                <ul class="outer_list">
+                    <li>Polynomial Features: most of the numerical values in the input will be fed into a PolynomialFeature object with a degree of two. This means those columns, the squares of each of those columns, and interaction terms.</li>
+                    <li>Approx_Prof_Bonus: A Prof(iciency) Bonus is a common stat in Dungeons & Dragons that has been subtly present in our data the whole time. Both expected hit bonus and spell save dc are derived from a combination of stats and prof bonus, and we can try to use those elements to reconstitute it. The specifics here are dependant on D&D rules minussa, but suffice it to say, this algorithm attempts to solve for prof bonus, and will get very close to the real value (if not exact) for almost all monsters.</li>
+                    <li>Experience Ratio: A creature's Constitution affects how quickly they gain hit points as they increase in power. By taking the quotient of hp and con, we produce a number that is very roughly proportionate to a monsters 'amount of experience'. This may help us home in on the CR.</li>
+                </ul>
+            </center>
+            <p>
+                Finally, because of the new polynomial transformations, all numerical values will be added back in to see if they improve the model at all. We'll also try to use k-fold cross validation again to find an even better set of parameters. 
+                <br><br>
+                Using the same methods as the baseline model with these adjustments, we produce a new model. This one has a final MSE of just 1.3008, making it the most powerful by far, and <i>certainly</i> better than me.
+            </p>
+            
+        </section>
+        <section>
+            <h3>
+                Part 6: Conclusion
+            </h3>
+            <p>
+                To return to the Bullywug Gladiator I designed, we now have all the ingredients needed to predict its CR.
+            </p>
+            <center>
+                <img src='images/Predict.PNG'/>
+            </center>
+            <p>
+                Given that it's on the borderline, I could call it either CR 3 or 4, and given its bonus action attack, I'll choose to make it CR 4. 
+                <br><br>
+                This is a very exciting tool to have access to, and I'm very excited to keep using (and probably tuning) it. We've created a statistical regression tool that can generate highly accurate power level ratings for any monster and can be used to guide and supplement custom monster design and make gameplay more balanced and exciting. 
+                <br><br>
+                If it weren't for that Star Trek themed procedural animation generator, this would be the nerdiest thing I've ever done.
             </p>
         </section>
         
-        
     </body>
 </html>
+
